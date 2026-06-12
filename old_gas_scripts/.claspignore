@@ -1,0 +1,4 @@
+# Ignorar todos os arquivos no push do clasp, exceto os necessários
+**/*
+!appsscript.json
+!Código.js

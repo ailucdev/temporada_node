@@ -1,0 +1,28 @@
+# Dependências
+node_modules/
+**/node_modules/
+
+# Compilados/Builds
+lib/
+**/lib/
+
+# Arquivos de Ambiente e Credenciais (Segurança)
+.env.local
+**/.env.local
+secrets/
+**/secrets/
+*.json.key
+*.pem
+
+# Logs do Firebase e Sistema
+*-debug.log
+*.log
+
+# Backups locais de planilhas pesadas
+*.ods
+*.xlsx
+*.csv
+
+# Diretórios do Agente / IDE
+.agents/
+.gemini/
