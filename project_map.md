@@ -8,6 +8,9 @@ Este arquivo descreve a estrutura de pastas e a responsabilidade de cada arquivo
 
 ```
 temporada_node/
+├── .agents/                     # Configurações de IA da IDE (Antigravity)
+│   └── rules/
+│       └── omnistack-agent.md   # Definições da persona omnistack-agent
 ├── docs/                        # Documentação de dados e API
 │   ├── api_reference.md         # Manual de Endpoints ativos em produção
 │   └── schema.md                # Estrutura e regras das planilhas Google Sheets
