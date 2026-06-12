@@ -10,19 +10,27 @@ let authClient: any = null;
 export const getGoogleAuth = () => {
   if (authClient) return authClient;
 
-  // Se o arquivo de credenciais local existe, configuramos GOOGLE_APPLICATION_CREDENTIALS
-  // para que a biblioteca GoogleAuth o detecte automaticamente.
   if (fs.existsSync(keyPath)) {
-    process.env.GOOGLE_APPLICATION_CREDENTIALS = keyPath;
+    // Localmente usamos JWT para evitar o erro 403 de Service Usage/Quota Project
+    const credentials = JSON.parse(fs.readFileSync(keyPath, "utf8"));
+    authClient = new google.auth.JWT(
+      credentials.client_email,
+      undefined,
+      credentials.private_key,
+      [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/calendar"
+      ]
+    );
+  } else {
+    // Em produção usamos GoogleAuth (Application Default Credentials - ADC)
+    authClient = new google.auth.GoogleAuth({
+      scopes: [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/calendar"
+      ]
+    });
   }
-
-  // Instanciar o cliente GoogleAuth (Application Default Credentials - ADC)
-  authClient = new google.auth.GoogleAuth({
-    scopes: [
-      "https://www.googleapis.com/auth/spreadsheets",
-      "https://www.googleapis.com/auth/calendar"
-    ]
-  });
 
   return authClient;
 };

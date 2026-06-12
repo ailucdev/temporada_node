@@ -27,9 +27,9 @@ Este arquivo acompanha a evolução do projeto de automatização de aluguéis p
 *   🟢 **Tarefa 3.2:** Associação do repositório remoto no GitHub (`https://github.com/ailucdev/temporada_node`).
 *   🟢 **Tarefa 3.3:** Execução do primeiro push seguro da branch `main`.
 
-## 🟡 Fase 4: Integração de Parceiros e Padronização
-*   🟡 **Tarefa 4.1:** Atualização das regras do `GEMINI.md` para monitorar ativamente os arquivos `ROADMAP.md` e `project_map.md`.
-*   🟡 **Tarefa 4.2:** Criação de roteiro estruturado e scripts de automação para configuração remota do ambiente de novos desenvolvedores parceiros.
+## 🟢 Fase 4: Integração de Parceiros e Padronização
+*   🟢 **Tarefa 4.1:** Atualização das regras do `GEMINI.md` para monitorar ativamente os arquivos `ROADMAP.md` e `project_map.md`.
+*   🟢 **Tarefa 4.2:** Criação de roteiro estruturado e scripts de automação para configuração remota do ambiente de novos desenvolvedores parceiros.
 *   🔴 **Tarefa 4.3:** Migração e implementação da lógica de sincronização global de calendários baseada no script legado `sincroniza.js` (processando os feeds iCal do Airbnb/Booking, removendo eventos cancelados/órfãos do Google Calendar, e movendo estadias passadas para a aba Estadia do Sheets).
 
 ## 🔴 Fase 5: Próximas Funcionalidades e Manutenção
