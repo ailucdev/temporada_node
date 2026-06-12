@@ -34,3 +34,6 @@ As seguintes diretrizes devem ser seguidas estritamente durante a evolução do 
     *   Trazer discussões estruturadas para garantir a melhor tomada de decisão.
 4.  **Preservação de Backups:** Não exclua arquivos de backup locais do diretório `old_gas_scripts/` a menos que explicitado.
 5.  **Persistência de Contexto:** Prefira persistir informações relevantes de longo prazo neste arquivo (`GEMINI.md`) em vez do contexto global do agente.
+6.  **Manutenção de Documentação Ativa:** Manter dois arquivos de documentação sempre atualizados e monitorados em todas as sessões:
+    *   `ROADMAP.md`: Contém a evolução do projeto dividida em fases e tarefas, com indicação visual de aberta, em andamento ou concluída.
+    *   `project_map.md`: Contém o mapeamento da estrutura de diretórios e arquivos do projeto com breves descrições de suas funções.
