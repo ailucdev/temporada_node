@@ -35,3 +35,7 @@ Este arquivo acompanha a evolução do projeto de automatização de aluguéis p
 ## 🔴 Fase 5: Próximas Funcionalidades e Manutenção
 *   🔴 **Tarefa 5.1:** Automatização de rotina de fechamento de faturamento mensal (Contabilização Financeira).
 *   🔴 **Tarefa 5.2:** Desenvolvimento de módulo de conciliação financeira automatizado no Sheets.
+
+## 🔴 Fase 6: Aprofundar interação via WhatsApp
+*   🔴 **Tarefa 6.1:** Elencar e implementar novos comandos.
+*   🔴 **Tarefa 6.2:** Implementar mecanismo de permissão/autenticação para chamadas via whatsapp às funções do Temporada
