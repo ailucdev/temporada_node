@@ -141,7 +141,16 @@ export const tratarWebhookWhatsApp = async (req: Request, res: Response) => {
     const propriedadesRaw = await sheetsService.getRowsRaw("Propriedade");
     const propriedadesList = propriedadesRaw.map(row => row[0]).filter(Boolean);
 
-    const parsed = processaMensagemZap(mensagem, propriedadesList);
+    // Carrega as temporadas/períodos especiais da planilha em tempo real
+    const temporadasRaw = await sheetsService.getRowsRaw("Temporada");
+    const temporadasList = temporadasRaw.map(row => ({
+      local: row[0] ? String(row[0]).trim().toUpperCase() : "",
+      nome: row[1] ? String(row[1]).trim() : "",
+      dataInicio: row[2] ? String(row[2]).trim() : "",
+      dataFim: row[3] ? String(row[3]).trim() : ""
+    })).filter(t => t.local && t.nome && t.dataInicio && t.dataFim);
+
+    const parsed = processaMensagemZap(mensagem, propriedadesList, temporadasList);
 
     switch (parsed.comando) {
       case "SIMULAR": {

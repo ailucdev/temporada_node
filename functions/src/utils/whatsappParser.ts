@@ -86,10 +86,21 @@ const PLANILHAS_MAP: { [key: string]: string } = {
   PROPRIEDADE: "Propriedade"
 };
 
+export interface PeriodoSazonal {
+  local: string;
+  nome: string;
+  dataInicio: string;
+  dataFim: string;
+}
+
 /**
  * Traduz mensagem do WhatsApp para payload estruturado usando Regex.
  */
-export const processaMensagemZap = (texto: string, propriedadesList: string[] = PROPRIEDADES_LIST): MensagemProcessada => {
+export const processaMensagemZap = (
+  texto: string,
+  propriedadesList: string[] = PROPRIEDADES_LIST,
+  temporadasList: PeriodoSazonal[] = []
+): MensagemProcessada => {
   const dados: MensagemProcessada = {
     comando: null,
     planilha: "Reserva",
@@ -151,8 +162,9 @@ export const processaMensagemZap = (texto: string, propriedadesList: string[] = 
     dados.dataInicio = periodoInformado.dataInicio;
     dados.dataFim = periodoInformado.dataFim;
   } else {
-    // Busca por feriado/evento mapeado estaticamente
-    const evento = extrairEventoEstatico(msg);
+    // Busca por feriado/evento mapeado dinamicamente ou estaticamente
+    const localPrefix = dados.propriedade ? dados.propriedade.substring(0, 2) : (dados.local ? LOCAIS_MAPPING[dados.local] : null);
+    const evento = extrairEventoDinamico(msg, temporadasList, localPrefix);
     if (evento) {
       dados.periodo = evento.nome;
       dados.dataInicio = evento.dataInicio;
@@ -230,7 +242,54 @@ function extrairPeriodoTexto(msg: string): { dataInicio: string; dataFim: string
   };
 }
 
-function extrairEventoEstatico(msg: string): { nome: string; dataInicio: string; dataFim: string } | null {
+function extrairEventoDinamico(
+  msg: string,
+  temporadasList: PeriodoSazonal[],
+  localPrefix: string | null
+): { nome: string; dataInicio: string; dataFim: string } | null {
+  // 1. Filtrar temporadas válidas para o local se o prefixo for identificado
+  let temporadasFiltradas = temporadasList;
+  if (localPrefix) {
+    temporadasFiltradas = temporadasList.filter(
+      (t) => t.local.toUpperCase() === localPrefix.toUpperCase()
+    );
+  }
+
+  // 2. Procurar na lista filtrada
+  for (const evento of temporadasFiltradas) {
+    const nomeEvento = evento.nome
+      .toUpperCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+
+    if (msg.includes(nomeEvento)) {
+      return {
+        nome: evento.nome,
+        dataInicio: evento.dataInicio,
+        dataFim: evento.dataFim
+      };
+    }
+  }
+
+  // 3. Fallback: Se não encontrou usando o localPrefix, procura em todas as temporadas passadas
+  if (localPrefix && temporadasFiltradas.length < temporadasList.length) {
+    for (const evento of temporadasList) {
+      const nomeEvento = evento.nome
+        .toUpperCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+      if (msg.includes(nomeEvento)) {
+        return {
+          nome: evento.nome,
+          dataInicio: evento.dataInicio,
+          dataFim: evento.dataFim
+        };
+      }
+    }
+  }
+
+  // 4. Fallback final: Se temporadasList estiver vazio ou não encontrar, usa o calendário estático legado
   for (const evento of PERIODOS_ESPECIAIS) {
     const nomeEvento = evento.nome
       .toUpperCase()
@@ -241,6 +300,7 @@ function extrairEventoEstatico(msg: string): { nome: string; dataInicio: string;
       return evento;
     }
   }
+
   return null;
 }
 
