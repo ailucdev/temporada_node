@@ -30,8 +30,8 @@ Este arquivo acompanha a evolução do projeto de automatização de aluguéis p
 ## 🟡 Fase 4: Integração de Parceiros e Padronização
 *   🟡 **Tarefa 4.1:** Atualização das regras do `GEMINI.md` para monitorar ativamente os arquivos `ROADMAP.md` e `project_map.md`.
 *   🟡 **Tarefa 4.2:** Criação de roteiro estruturado e scripts de automação para configuração remota do ambiente de novos desenvolvedores parceiros.
+*   🔴 **Tarefa 4.3:** Migração e implementação da lógica de sincronização global de calendários baseada no script legado `sincroniza.js` (processando os feeds iCal do Airbnb/Booking, removendo eventos cancelados/órfãos do Google Calendar, e movendo estadias passadas para a aba Estadia do Sheets).
 
 ## 🔴 Fase 5: Próximas Funcionalidades e Manutenção
-*   🔴 **Tarefa 5.1:** Implementação de Sincronização iCal bidirecional direta (Airbnb / Booking) via microsserviço.
-*   🔴 **Tarefa 5.2:** Automatização de rotina de fechamento de faturamento mensal (Contabilização Financeira).
-*   🔴 **Tarefa 5.3:** Desenvolvimento de módulo de conciliação financeira automatizado no Sheets.
+*   🔴 **Tarefa 5.1:** Automatização de rotina de fechamento de faturamento mensal (Contabilização Financeira).
+*   🔴 **Tarefa 5.2:** Desenvolvimento de módulo de conciliação financeira automatizado no Sheets.
