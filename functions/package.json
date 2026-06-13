@@ -7,7 +7,8 @@
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "start:local": "npm run build && node -e \"require('dotenv').config({path:'.env'}); require('dotenv').config({path:'.env.local'}); const { app } = require('./lib/index.js'); app.listen(5002, () => console.log('Local MCP Server running at http://localhost:5002'))\""
   },
   "engines": {
     "node": "20"

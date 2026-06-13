@@ -16,9 +16,12 @@ export class SheetsService {
   private async init(): Promise<GoogleSpreadsheet> {
     if (this.doc) return this.doc;
 
+    console.log(`[SheetsService] Initializing doc with ID: ${this.spreadsheetId}`);
     const auth = getGoogleAuth();
     this.doc = new GoogleSpreadsheet(this.spreadsheetId, auth);
+    console.log("[SheetsService] Loading document info...");
     await this.doc.loadInfo();
+    console.log("[SheetsService] Document info loaded successfully.");
     return this.doc;
   }
 

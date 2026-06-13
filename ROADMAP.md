@@ -39,3 +39,8 @@ Este arquivo acompanha a evolução do projeto de automatização de aluguéis p
 ## 🔴 Fase 6: Aprofundar interação via WhatsApp
 *   🔴 **Tarefa 6.1:** Elencar e implementar novos comandos.
 *   🔴 **Tarefa 6.2:** Implementar mecanismo de permissão/autenticação para chamadas via whatsapp às funções do Temporada
+
+## 🟢 Fase 7: Exposição de API e Servidor MCP (Model Context Protocol)
+*   🟢 **Tarefa 7.1:** Criar endpoint REST `GET /reservas` para listagem de reservas/estadias de imóveis com filtros temporais (`futuras`, `passadas` e `periodo`).
+*   🟢 **Tarefa 7.2:** Desenvolver e colocar em produção o servidor MCP integrado via Server-Sent Events (SSE) e HTTP POST para expor ferramentas agênticas ao Antigravity IDE/Claude.
+

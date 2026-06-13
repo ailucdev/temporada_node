@@ -52,6 +52,7 @@ temporada_node/
 ### 3. Pasta `functions/src/controllers/`
 *   [simulacaoController.ts](file:///home/airton/dev/temporada_node/functions/src/controllers/simulacaoController.ts): Contém o algoritmo que calcula orçamentos aplicando diárias básicas e diárias sazonais acumuladas no Sheets.
 *   [reservaController.ts](file:///home/airton/dev/temporada_node/functions/src/controllers/reservaController.ts): Orquestra o fluxo de criação, alteração e cancelamento físico de reservas.
+*   [mcpController.ts](file:///home/airton/dev/temporada_node/functions/src/controllers/mcpController.ts): Implementa as rotas do servidor MCP via Server-Sent Events (SSE) e HTTP POST para disponibilizar as ferramentas agênticas do sistema.
 *   [financeiroController.ts](file:///home/airton/dev/temporada_node/functions/src/controllers/financeiroController.ts): Gerencia o lançamento de débitos manuais no fechamento de contas.
 
 ### 4. Pasta `functions/src/utils/`

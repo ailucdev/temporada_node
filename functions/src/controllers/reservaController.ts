@@ -481,3 +481,123 @@ export const cancelarReserva = async (req: Request, res: Response) => {
     return res.status(500).json({ status: "500", message: error.message });
   }
 };
+
+/**
+ * GET /reservas
+ * Parâmetros de Query String:
+ * - idPropriedade (string, obrigatório): ex: "ASB402"
+ * - tipo (string, opcional): "Reservas" (default) ou "Estadias"
+ * - filtro (string, opcional): "futuras", "passadas" ou "periodo"
+ * - inicio (string, opcional): Data de início do período "DD/MM/YYYY" (obrigatório se filtro for "periodo")
+ * - fim (string, opcional): Data de fim do período "DD/MM/YYYY" (obrigatório se filtro for "periodo")
+ */
+export const listarReservasAPI = async (req: Request, res: Response) => {
+  try {
+    const { idPropriedade, tipo, filtro, inicio, fim } = req.query;
+
+    if (!idPropriedade) {
+      return res.status(400).json({ status: "400", message: "O parâmetro 'idPropriedade' é obrigatório." });
+    }
+
+    const sheetsId = process.env.SPREADSHEET_TEMPORADA_ID;
+    if (!sheetsId) throw new Error("SPREADSHEET_TEMPORADA_ID não configurado.");
+
+    const sheetsService = new SheetsService(sheetsId);
+
+    // Mapear "Reservas" -> "Reserva" / "Estadias" -> "Estadia"
+    let abaName = "Reserva";
+    if (tipo === "Estadias") {
+      abaName = "Estadia";
+    }
+
+    const rows = await sheetsService.getRows(abaName);
+
+    // Filtrar pela propriedade correspondente
+    const rowsFiltered = rows.filter(row => row.get("idPropriedade") === idPropriedade);
+
+    // Formatar datas vindas do Google Sheets
+    const formatDataStr = (val: any): string => {
+      if (!val) return "";
+      const str = String(val).trim();
+      if (str.includes("/")) return str;
+      const num = Number(str);
+      if (!isNaN(num) && num > 0) {
+        const utcDate = new Date((num - 25569) * 86400 * 1000);
+        const y = utcDate.getUTCFullYear();
+        const m = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
+        const d = String(utcDate.getUTCDate()).padStart(2, "0");
+        return `${d}/${m}/${y}`;
+      }
+      return str;
+    };
+
+    const parseDateObj = (val: any): Date | null => {
+      const str = formatDataStr(val);
+      if (!str) return null;
+      const date = parseDataBrasil(str);
+      return isNaN(date.getTime()) ? null : date;
+    };
+
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    let resultRows = rowsFiltered;
+
+    if (filtro === "futuras") {
+      resultRows = rowsFiltered.filter(row => {
+        const dataSaida = parseDateObj(row.get("saida"));
+        return dataSaida ? dataSaida >= hoje : false;
+      });
+    } else if (filtro === "passadas") {
+      resultRows = rowsFiltered.filter(row => {
+        const dataSaida = parseDateObj(row.get("saida"));
+        return dataSaida ? dataSaida < hoje : false;
+      });
+    } else if (filtro === "periodo") {
+      if (!inicio || !fim) {
+        return res.status(400).json({ status: "400", message: "Para o filtro 'periodo', os parâmetros 'inicio' e 'fim' no formato DD/MM/YYYY são obrigatórios." });
+      }
+      const dataInicioFiltro = parseDataBrasil(String(inicio));
+      const dataFimFiltro = parseDataBrasil(String(fim));
+
+      if (isNaN(dataInicioFiltro.getTime()) || isNaN(dataFimFiltro.getTime())) {
+        return res.status(400).json({ status: "400", message: "Parâmetros 'inicio' ou 'fim' inválidos. Formato: DD/MM/YYYY" });
+      }
+
+      resultRows = rowsFiltered.filter(row => {
+        const dataEntrada = parseDateObj(row.get("entrada"));
+        const dataSaida = parseDateObj(row.get("saida"));
+
+        if (!dataEntrada || !dataSaida) return false;
+
+        // Fórmula de sobreposição de data:
+        // (entradaReserva <= fimBusca && saidaReserva >= inicioBusca)
+        return dataEntrada <= dataFimFiltro && dataSaida >= dataInicioFiltro;
+      });
+    }
+
+    const registros = resultRows.map(row => ({
+      idConsulta: row.get("idConsulta") || "",
+      idPropriedade: row.get("idPropriedade") || "",
+      nomeInteressado: row.get("nomeInteressado") || "",
+      celularInteressado: row.get("celularInteressado") || "",
+      cpfInteressado: row.get("cpfInteressado") || "",
+      emailInteressado: row.get("emailInteressado") || "",
+      entrada: formatDataStr(row.get("entrada")),
+      saida: formatDataStr(row.get("saida")),
+      valorLocacao: row.get("valorLocacao") || "0",
+      STATUS: row.get("STATUS") || "RESERVADA"
+    }));
+
+    return res.status(200).json({
+      status: "200",
+      message: `Listagem de ${abaName}s concluída.`,
+      quantidade: registros.length,
+      dados: registros
+    });
+
+  } catch (error: any) {
+    console.error("Erro ao listar reservas via API:", error);
+    return res.status(500).json({ status: "500", message: error.message });
+  }
+};

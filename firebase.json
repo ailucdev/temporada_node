@@ -11,7 +11,7 @@
         "ui-debug.log"
       ],
       "predeploy": [
-        "npm --prefix functions run build"
+        "cd functions && npm run build"
       ]
     }
   ]

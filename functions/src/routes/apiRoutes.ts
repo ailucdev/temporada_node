@@ -5,10 +5,12 @@ import {
   alterarReserva,
   cancelarReserva,
   tratarWebhookWhatsApp,
-  tratarUpdatePlanilha
+  tratarUpdatePlanilha,
+  listarReservasAPI
 } from "../controllers/reservaController";
 import { simularReserva } from "../controllers/simulacaoController";
 import { lancarDebito } from "../controllers/financeiroController";
+import { mcpSseHandler, mcpMessagesHandler } from "../controllers/mcpController";
 
 export const apiRoutes = Router();
 
@@ -30,9 +32,14 @@ apiRoutes.post("/webhook/sheet-update", tratarUpdatePlanilha);
 apiRoutes.get("/simulacao", simularReserva);
 
 // Operações sobre Reservas (FlutterFlow)
+apiRoutes.get("/reservas", listarReservasAPI);
 apiRoutes.post("/reservas", criarReserva);
 apiRoutes.put("/reservas/:idConsulta", alterarReserva);
 apiRoutes.delete("/reservas/:idConsulta", cancelarReserva);
+
+// Rotas do Servidor MCP (Model Context Protocol) via SSE
+apiRoutes.get("/mcp/sse", mcpSseHandler);
+apiRoutes.post("/mcp/messages", mcpMessagesHandler);
 
 // Operações Financeiras
 apiRoutes.post("/financeiro/debito", lancarDebito);

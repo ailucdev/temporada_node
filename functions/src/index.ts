@@ -1,4 +1,4 @@
-import * as functions from "firebase-functions";
+import { onRequest } from "firebase-functions/v2/https";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -22,7 +22,11 @@ app.use((req, res) => {
   res.status(404).json({ status: "404", message: "Rota não encontrada" });
 });
 
-// Exporta o Express como Firebase Cloud Function com conta de serviço explícita
-export const api = functions.runWith({
-  serviceAccount: "temporada-service-account@temporada-14b29.iam.gserviceaccount.com"
-}).https.onRequest(app);
+// Exporta o Express como Firebase Cloud Function Gen 2 com conta de serviço explícita
+export const api = onRequest({
+  serviceAccount: "temporada-service-account@temporada-14b29.iam.gserviceaccount.com",
+  region: "us-central1",
+  cors: true
+}, app);
+
+export { app };

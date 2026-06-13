@@ -268,3 +268,62 @@ Lança uma despesa na planilha financeira dedicada da propriedade.
       "message": "Débito lançado com sucesso."
     }
     ```
+
+---
+
+### I. Listagem de Reservas Estruturada (GET /reservas)
+Obtém uma lista JSON de reservas ou estadias de um imóvel, suportando filtros temporais de corte (passadas, futuras ou por sobreposição de período).
+
+*   **Rota:** `/reservas`
+*   **Método:** `GET`
+*   **Autenticação:** Sim (Bearer Token)
+*   **Parâmetros de Query String (URL):**
+    *   `idPropriedade` (string, obrigatório): ID do imóvel (ex: `ASB402`).
+    *   `tipo` (string, opcional): `Reservas` (default, lê aba Reserva) ou `Estadias` (lê aba Estadia).
+    *   `filtro` (string, opcional): Filtro de tempo. Valores válidos:
+        *   `futuras`: Retorna reservas cujo check-out é hoje ou no futuro.
+        *   `passadas`: Retorna reservas concluídas cujo check-out ocorreu antes de hoje.
+        *   `periodo`: Retorna qualquer reserva que intercepte o período informado.
+    *   `inicio` (string, obrigatório se `filtro=periodo`): Data inicial no formato `DD/MM/YYYY`.
+    *   `fim` (string, obrigatório se `filtro=periodo`): Data final no formato `DD/MM/YYYY`.
+*   **Exemplo de Chamada (Filtrado por Período):**
+    `GET https://us-central1-temporada-14b29.cloudfunctions.net/api/reservas?idPropriedade=ASB402&filtro=periodo&inicio=12/06/2026&fim=15/06/2026`
+*   **Resposta (200 OK):**
+    ```json
+    {
+      "status": "200",
+      "message": "Listagem de Reservas concluída.",
+      "quantidade": 1,
+      "dados": [
+        {
+          "idConsulta": "1777073424869",
+          "idPropriedade": "ASB402",
+          "nomeInteressado": "(Turismo) Monica Ferreira Dos Santos",
+          "celularInteressado": "",
+          "cpfInteressado": "",
+          "emailInteressado": "",
+          "entrada": "12/06/2026",
+          "saida": "14/06/2026",
+          "valorLocacao": "R$ 629,99",
+          "STATUS": "COBERTA"
+        }
+      ]
+    }
+    ```
+
+---
+
+### J. Servidor MCP (Model Context Protocol) via SSE
+Expõe as lógicas e comandos do ecossistema Temporada como ferramentas (tools) para agentes de IA que suportem a conexão via Server-Sent Events (SSE).
+
+*   **Autenticação:** Exige o header `Authorization: Bearer <SEU_TOKEN>` em ambas as rotas.
+*   **Rota SSE (GET):** `/mcp/sse`
+    *   *Ação:* Estabelece a conexão e envia o cabeçalho `event: endpoint` contendo a URL de envio de mensagens do canal.
+*   **Rota de Mensagens (POST):** `/mcp/messages?sessionId=<session_id>`
+    *   *Ação:* Recebe requisições JSON-RPC do protocolo MCP (ex: `tools/list` e `tools/call`) e direciona os retornos para o respectivo fluxo SSE.
+*   **Ferramentas Disponibilizadas (Tools):**
+    1.  `simular`: Cota tarifas e verifica disponibilidade (args: `idPropriedade`, `inicio`, `fim`).
+    2.  `listar_reservas`: Lista de reservas filtrada (args: `idPropriedade`, `tipo`, `filtro`, `inicio`, `fim`).
+    3.  `criar_reserva`: Registra reservas (args: `idPropriedade`, `entrada`, `saida`, `valorLocacao`, `nome`, etc.).
+    4.  `cancelar_reserva`: Libera datas pelo ID (args: `idConsulta`).
+    5.  `whatsapp_webhook`: Recebe mensagens no formato informal do WhatsApp (args: `mensagem`).
